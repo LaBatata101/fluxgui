@@ -3,6 +3,12 @@
 from distutils.core import setup
 import os, subprocess
 
+def pre_install():
+    gschema_dir = os.path.join(os.path.dirname(
+        os.path.dirname(os.path.realpath(__file__))), 'fluxgui')
+    print("Compiling gschema file...")
+    subprocess.call(['glib-compile-schemas', gschema_dir])
+
 data_files = [
     ('share/icons/hicolor/16x16/apps', ['icons/hicolor/16x16/apps/fluxgui.svg']),
     ('share/icons/hicolor/22x22/apps', ['icons/hicolor/22x22/apps/fluxgui.svg']),
@@ -41,6 +47,8 @@ binary separately. You can do this by running
     ./download-xflux.py
 
 before running 'setup.py'.""")
+
+pre_install()
 
 setup(name = "f.lux indicator applet",
     version = "1.1.11~pre",
