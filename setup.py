@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 
 from distutils.core import setup
-import os, subprocess
+import os, subprocess, shutil
 
 def pre_install():
     gschema_dir = os.path.join(os.path.dirname(
         os.path.dirname(os.path.realpath(__file__))), 'fluxgui')
-    print("Compiling gschema file...")
-    subprocess.call(['glib-compile-schemas', gschema_dir])
+    # check if we have sudo permission and install gschema file globally
+    # otherwise locally
+    if os.getuid() == 0:
+        gschema_dir_global = '/usr/share/glib-2.0/schemas'
+        gschema_file = gschema_dir + '/apps.fluxgui.gschema.xml'
+
+        shutil.copy2(gschema_file, gschema_dir_global)
+        print("Compiling gschema file...")
+        subprocess.call(['glib-compile-schemas', gschema_dir_global])
+    else:
+        print("Compiling gschema file...")
+        subprocess.call(['glib-compile-schemas', gschema_dir])
 
 data_files = [
     ('share/icons/hicolor/16x16/apps', ['icons/hicolor/16x16/apps/fluxgui.svg']),
