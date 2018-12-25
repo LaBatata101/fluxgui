@@ -215,7 +215,9 @@ def main():
     try:
         gschema_dir = os.path.join(os.path.dirname(
             os.path.dirname(os.path.realpath(__file__))), 'fluxgui')
-        os.environ["GSETTING_SCHEMA_DIR"] = gschema_dir
+        if os.path.isfile(gschema_dir + 'gschemas.compiled'):
+            os.environ["GSETTING_SCHEMA_DIR"] = gschema_dir
+
         app = FluxGUI()
         signal.signal(signal.SIGTERM, app.signal_exit)
         signal.signal(signal.SIGINT, app.signal_exit)
