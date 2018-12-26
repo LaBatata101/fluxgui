@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
 
 from distutils.core import setup
-import os, subprocess, shutil
+from distutils.command.install import install
+import os, subprocess, shutil, sys
 
-def pre_install():
-    gschema_dir = os.path.join(os.path.dirname(
-        os.path.dirname(os.path.realpath(__file__))), 'fluxgui')
-    # check if we have sudo permission and install gschema file globally
-    # otherwise locally
-    if os.getuid() == 0:
-        gschema_dir_global = '/usr/share/glib-2.0/schemas'
-        gschema_file = gschema_dir + '/apps.fluxgui.gschema.xml'
+class CustomInstall(install):
 
-        shutil.copy2(gschema_file, gschema_dir_global)
-        print("Compiling gschema file...")
-        subprocess.call(['glib-compile-schemas', gschema_dir_global])
-    else:
-        print("Compiling gschema file...")
-        subprocess.call(['glib-compile-schemas', gschema_dir])
+    def run(self):
+        gschema_dir = os.path.join(os.path.dirname(
+            os.path.dirname(os.path.realpath(__file__))), 'fluxgui')
+
+        # check if --user option is passed and install gschema file
+        # accordingly
+        if sys.argv[2] == '--user':
+            print("Compiling gschema file...")
+            subprocess.call(['glib-compile-schemas', gschema_dir])
+        else:
+            gschema_dir_global = '/usr/share/glib-2.0/schemas'
+            gschema_file = gschema_dir + '/apps.fluxgui.gschema.xml'
+
+            shutil.copy2(gschema_file, gschema_dir_global)
+            print("Compiling gschema file...")
+            subprocess.call(['glib-compile-schemas', gschema_dir_global])
+
+        super().run()
+
 
 data_files = [
     ('share/icons/hicolor/16x16/apps', ['icons/hicolor/16x16/apps/fluxgui.svg']),
@@ -58,7 +65,6 @@ binary separately. You can do this by running
 
 before running 'setup.py'.""")
 
-pre_install()
 
 setup(name = "f.lux indicator applet",
     version = "1.1.11~pre",
@@ -76,5 +82,6 @@ setup(name = "f.lux indicator applet",
     control xflux, an application that makes the color of your computer's
     display adapt to the time of day, warm at nights and like sunlight during
     the day""",
+    cmdclass = {"install": CustomInstall},
   )
 
