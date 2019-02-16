@@ -68,6 +68,7 @@ class Settings(object):
         # is necessary if you're using a non-standard schema dir,
         # e.g. when running fluxgui from the repo without installing
         # it.
+        # TODO: support xflux and redshift configs use self.settings.get_child("xflux|redshift")
         self.settings = Gio.Settings.new('apps.fluxgui')
 
         self._color = self.settings.get_string("colortemp")
