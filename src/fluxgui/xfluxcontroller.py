@@ -17,8 +17,8 @@ class XfluxController(object):
         if 'longitude' not in kwargs:
             kwargs['longitude'] = 0
         self.init_kwargs = kwargs
-        self._current_color = str(color)
-        self._pause_color = str(pause_color)
+        self._current_color = color
+        self._pause_color = pause_color
 
         self.states = {
             "INIT": _InitState(self),
